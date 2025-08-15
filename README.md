@@ -2,8 +2,7 @@
 
 # GTcomplex
 
-**High-performance 3D search and alignment of macromolecular complexes**
-
+**High-performance 3D search and alignment of macromolecular complexes**  
 *Fast, accurate, scalable – for proteins, RNAs, DNAs*
 
 ## Features
