@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Margelevicius"
+  given-names: "Mindaugas"
+title: "GTcomplex, High-performance 3D search and alignment of macromolecular complexes"
+version: 1.0.6
+date-released: 2025-08-15
+url: "https://github.com/minmarg/gtcomplex"
