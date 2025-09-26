@@ -4,6 +4,6 @@ authors:
 - family-names: "Margelevicius"
   given-names: "Mindaugas"
 title: "GTcomplex, High-performance 3D search and alignment of macromolecular complexes"
-version: 1.0.6
-date-released: 2025-08-15
+version: 1.0.9
+date-released: 2025-09-26
 url: "https://github.com/minmarg/gtcomplex"

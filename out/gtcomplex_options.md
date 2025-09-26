@@ -1,6 +1,5 @@
 ```
-
-gtcomplex 1.0.6 (compiled with GPU support)
+gtcomplex 1.0.9 (compiled with GPU support)
 
 GTcomplex, HPC biomolecular complex structure alignment, superposition and search.
 (C)2021-2025 Mindaugas Margelevicius, Institute of Biotechnology, Vilnius University
@@ -38,14 +37,14 @@ Basic options:
 --chains                    Instead of aligning complexes, align their
                             individual chains independently.
 
-Clustering options: (NOTE: Clustering of complexes not implemented yet)
+Clustering options:
 --cls=(<structs>,<dirs>,<archs>)
                             Comma-separated list of structure files (PDB,
                             PDBx/mmCIF, and gzip), tar archives (of files
                             gzipped and not) and directories (see --qrs) of
                             structures to be clustered.
                             NOTE: The clustering criterion defined by --sort.
-                            RECOMMENDED: --speed=13 for large datasets.
+                            RECOMMENDED: --speed>10 for large datasets.
                             RECOMMENDED: -c <dir> when --speed > 9.
 --cls-threshold=<threshold> TM-score (equal or greater) or RMSD (equal or
                             less) threshold for a pair to be considered
@@ -83,6 +82,10 @@ Output control options (for search usage except --sort):
 --nalns=<count>             Number of highest-scoring structure alignments
                             and superpositions to output for each query.
                         Default=2000
+--nchns=<count>             Similar to --nalns but limits the total number of
+                            chains to <count> (JSON format only).
+                            Use 0 for no limit (unlimited).
+                        Default=0
 --wrap=<width>              Wrap produced alignments to this width [40,).
                         Default=80
 --no-deletions              Remove deletion positions (gaps in query) from
@@ -218,7 +221,7 @@ HPC options:
                             NOTE: Default number is shown using --dev-list.
                         Default=[MAX(1, #cpu_cores - <cpu-threads-reading>)]
 --dev-queries-max-chains=<count>
-                            Maximum number of chains [100,256] for query
+                            Maximum number of chains [100,512] for query
                             complexes. Higher values increase memory usage and
                             may limit parallel execution.
                         Default=100
@@ -235,16 +238,15 @@ HPC options:
                             greatly reduce #structure pairs processed in
                             parallel.
                         Default=4000
---dev-max-length=<length>   Maximum length [100,65535] for reference
-                            structures. References of length larger than this
+--dev-max-length=<length>   Maximum chain length [100,65535] of reference
+                            structures. Chains of length larger than this
                             specified value will be skipped.
                             NOTE: Large values greatly reduce #structure pairs
                             processed in parallel.
                         Default=4000
---dev-min-length=<length>   Minimum length [3,32767] for reference structures.
-                            References shorter than this specified value will
-                            be skipped.
-                        Default=20
+--dev-min-length=<length>   Minimum reference chain length [3,32767].
+                            Chains shorter than this value will be skipped.
+                        Default=3 (20 when --chains is on)
 --no-file-sort              Do not sort files by size. Data locality can be
                             beneficial when reading files lasts longer than
                             computation.
@@ -294,11 +296,9 @@ Other options:
 
 
 Examples:
-gtcomplex -v --qrs=str1.cif.gz --rfs=my_huge_structure_database.tar -o my_output_directory
+gtcomplex -v --qrs=str1.cif.gz --rfs=my_structure_database.tar -o my_output_directory --speed=12
 gtcomplex -v --qrs=struct1.pdb --rfs=struct2.pdb,struct3.pdb,struct4.pdb -o my_output_directory
 gtcomplex -v --qrs=struct1.pdb,my_struct_directory --rfs=my_ref_directory -o my_output_directory
-gtcomplex -v --qrs=str1.pdb.gz,str2.cif.gz --rfs=archive.tar,my_ref_dir --chains -s 0 -o mydir
-gtcomplex -v --cls=my_huge_structure_database.tar -o my_output_directory
-
-
+gtcomplex -v --qrs=str1.pdb.gz,str2.cif.gz --rfs=archive.tar,my_ref_dir --chains -s 0.3 -o mydir
+gtcomplex -v --cls=my_huge_structure_database.tar -o my_output_directory --speed=12
 ```
