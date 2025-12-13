@@ -1,3 +1,4 @@
+[![Release](https://img.shields.io/github/v/release/minmarg/gtcomplex)](https://github.com/minmarg/gtcomplex/releases)
 ![Header image](imgs/gtcomplex_header.jpg)
 
 # GTcomplex
@@ -7,11 +8,11 @@
 
 ## Features
 
-  *  CPU/multiprocessing version (to appear later)
   *  Graphics processing unit (GPU) version
-  *  Configurable GPU memory
+  *  CPU/multiprocessing version (to appear later)
+  *  Configurable GPU/CPU memory
   *  Utilization of multiple GPUs
-  *  Tested on NVIDIA Pascal (GeForce GTX 1080MQ), Volta (V100), Ampere (A100), and Ada Lovelace (GeForce RTX 4090) GPU architectures
+  *  Tested on NVIDIA Pascal (GeForce GTX 1080MQ), Volta (V100), Ampere (A100), Ada Lovelace (GeForce RTX 4090), and Blackwell (GeForce RTX 5090) GPU architectures
   *  Same executable for different architectures
   *  Up to 4 orders of magnitude faster than US-align running on 64 cores
   *  More sensitive and accurate than US-align
@@ -22,7 +23,7 @@
   *  Reading (un)compressed structures from TAR archives 
   *  Allows searching within directories up to three levels deep
   *  **Clustering** ability (GPU only)
-  *  Cross-platform/portable code (to be released soon)
+  *  Cross-platform/portable code
 
 ## Available Platforms
 
@@ -57,6 +58,57 @@
 
   `MS_Windows_installer_GPU/GTcomplex-win64-installer.msi`
 
+## Installation from source code
+
+### Installation on Linux
+
+#### Software requirements
+
+  To build and install the GTcomplex software from the source code
+  on Linux, these tools are required to be installed:
+
+  *  CMake version 3.10 or greater
+
+  *  GNU Make version 3.82 or greater
+
+  *  GNU GCC compiler version (7.5) or greater, or LLVM clang compiler
+     version 10 or greater (or another C++ compiler that supports C++14)
+
+  *  [the NVIDIA CUDA toolkit](https://developer.nvidia.com/cuda-downloads) version 10.0 or greater
+     (required for GPU version only)
+
+#### Installation
+
+  Run the shell script for the GPU (Linux) version 
+  using GCC or LLVM/Clang compilers (takes several minutes to compile):
+
+  `BUILD_and_INSTALL__GPU__unix.sh`
+
+  `BUILD_and_INSTALL__GPU__unix__Hopper.sh` (Hopper architecture; e.g., H100)
+
+  `BUILD_and_INSTALL__GPU__unix__clang.sh`
+
+### Installation on MS Windows
+
+#### Software requirements
+
+   To build and install GTcomplex from the source code
+   on MS Windows, these tools are required to be installed:
+
+  *  CMake version 3.10 or greater (free software)
+
+  *  Visual C++ compiler, e.g., Visual Studio Community (free for open 
+     source projects; GTcomplex is an open source project)
+
+  *  [the NVIDIA CUDA toolkit](https://developer.nvidia.com/cuda-downloads) version 10.0 or greater 
+     (free software) (required for GPU version only)
+
+#### Installation
+
+  Run the command (batch) file for the GPU version:
+
+  `BUILD_and_INSTALL__GPU__win64.cmd`
+
 ## Getting started
 
   Type `gtcomplex` for a description of the [options](out/gtcomplex_options.md). 
@@ -86,7 +138,7 @@
 
   The maximum number of query chains is controlled with the `--dev-queries-total-length-per-chunk` 
   option. 
-  The default value is 100, but it can be increased to 256. 
+  The default value is 100; it can be increased to 512. 
   This option calculates the total length across all query chains. 
   There are no constraints on the number of chains in the reference complex, only the 
   available memory may limit the processing of extremely large reference complexes.
@@ -143,6 +195,12 @@
     Control the memory allocation for GTcomplex using the `--dev-mem` option. 
     This allows for running multiple instances of GTcomplex simultaneously on a single 
     GPU or CPU.
+
+## GTcomplex demo notebook on Google Colab
+
+The [GTcomplex_demo1](GTcomplex_demo1.ipynb) notebook demonstrates all-against-all 
+alignment of queries in the Ref-2-100 dataset and completes in approximately 
+half a minute.
 
 ## Reporting issues
 

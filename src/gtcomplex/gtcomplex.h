@@ -1,0 +1,318 @@
+/***************************************************************************
+ *   Copyright (C) 2021-2025 by Mindaugas Margelevicius                    *
+ *   Institute of Biotechnology, Vilnius University                        *
+ ***************************************************************************/
+
+#ifndef __gtcomplex_h__
+#define __gtcomplex_h__
+
+static const char*  version = "1.0.9";
+static const char*  verdate = "";
+
+static const char*  instructs = "\n\
+<> []\n\
+\n\
+GTcomplex, HPC biomolecular complex structure alignment, superposition and search.\n\
+(C)2021-2025 Mindaugas Margelevicius, Institute of Biotechnology, Vilnius University\n\
+\n\
+\n\
+Usage (one of the two):\n\
+<> --qrs=(<structs>|<dirs>|<archs>) --rfs=(<structs>|<dirs>|<archs>) -o <out_dir> [<options>]\n\
+<> --cls=(<structs>|<dirs>|<archs>) -o <out_dir> [<options>]   *GPU version*\n\
+\n\
+Basic options:\n\
+--qrs=(<structs>,<dirs>,<archs>)\n\
+                            Comma-separated list of structure files (PDB,\n\
+                            PDBx/mmCIF, and gzip), tar archives (of structure\n\
+                            files gzipped or not) and/or directories of\n\
+                            query structures. If a directory is specified,\n\
+                            subdirectories up to 3 levels deep will be\n\
+                            searched for structures.\n\
+--rfs=(<structs>,<dirs>,<archs>)\n\
+                            Comma-separated list of structure files (PDB,\n\
+                            PDBx/mmCIF, and gzip), tar archives and/or\n\
+                            directories of reference structures (to align\n\
+                            queries with). For directories, subdirectories\n\
+                            up to 3 levels deep will be searched.\n\
+                            RECOMMENDED: -c <dir> when --speed > 9.\n\
+--sfx=<file_extension_list> Comma-separated list of extensions of structures\n\
+                            to be searched for in the directories/archives\n\
+                            specified by --qrs and --rfs (or --cls).\n\
+                            By default, all extensions are valid.\n\
+-o <output_directory>       Directory of output files for each query or\n\
+                            cluster.\n\
+-c <cache_directory>        Directory for cached data, which can provide a\n\
+                            considerable speedup for multiple queries or\n\
+                            clustering and can be reused later (for same\n\
+                            --rfs or --cls). By default, not used.\n\
+--chains                    Instead of aligning complexes, align their\n\
+                            individual chains independently.\n\
+\n\
+Clustering options:\n\
+--cls=(<structs>,<dirs>,<archs>)\n\
+                            Comma-separated list of structure files (PDB,\n\
+                            PDBx/mmCIF, and gzip), tar archives (of files\n\
+                            gzipped and not) and directories (see --qrs) of\n\
+                            structures to be clustered.\n\
+                            NOTE: The clustering criterion defined by --sort.\n\
+                            RECOMMENDED: --speed>10 for large datasets.\n\
+                            RECOMMENDED: -c <dir> when --speed > 9.\n\
+--cls-threshold=<threshold> TM-score (equal or greater) or RMSD (equal or\n\
+                            less) threshold for a pair to be considered\n\
+                            part of the same cluster.\n\
+                        Default=0.5\n\
+--cls-coverage=<fraction>   Length coverage threshold (0,1].\n\
+                        Default=0.7\n\
+--cls-one-sided-coverage    Apply coverage threshold to one pair member.\n\
+--cls-out-sequences         Output each cluster's sequences in FASTA format.\n\
+--cls-algorithm=<code>      0: Complete-linkage clustering;\n\
+                            1: Single-linkage clustering.\n\
+                        Default=0\n\
+\n"
+"Output control options (for search usage except --sort):\n\
+-s <TMscore_threshold>      Report results down to this TM-score limit [0,1).\n\
+                            0 implies all results are valid for report.\n\
+                            NOTE: Also check the pre-screening options below.\n\
+                        Default=0.5\n\
+--2tm-score                 Include secondary TM-score, 2TM-score: TM-score\n\
+                            calculated over matched secondary structures.\n\
+--sort=<code>               0: Sort results by the greater TM-score of the two;\n\
+                            1: Sort by reference length-normalized TM-score;\n\
+                            2: Sort by query length-normalized TM-score;\n\
+                            3: Sort by the harmonic mean of the two TM-scores;\n\
+                            4: Sort by RMSD.\n\
+                            When --2tm-score is set:\n\
+                            5: Sort by the greater 2TM-score;\n\
+                            6: Sort by reference length-normalized 2TM-score;\n\
+                            7: Sort by query length-normalized 2TM-score.\n\
+                            8: Sort by the harmonic mean of the 2TM-scores;\n\
+                        Default=0\n\
+--nhits=<count>             Number of highest-scoring structures to list in\n\
+                            the results for each query.\n\
+                        Default=2000\n\
+--nalns=<count>             Number of highest-scoring structure alignments\n\
+                            and superpositions to output for each query.\n\
+                        Default=2000\n\
+--nchns=<count>             Similar to --nalns but limits the total number of\n\
+                            chains to <count> (JSON format only).\n\
+                            Use 0 for no limit (unlimited).\n\
+                        Default=0\n\
+--wrap=<width>              Wrap produced alignments to this width [40,).\n\
+                        Default=80\n\
+--no-deletions              Remove deletion positions (gaps in query) from\n\
+                            produced alignments.\n\
+--referenced                Produce transformation matrices for reference\n\
+                            structures instead of query(-ies).\n\
+--outfmt=<code>             Format of results:\n\
+                            0: Plain;\n\
+                            1: JSON.\n\
+                        Default=0\n\
+\n\
+Interpretation options:\n\
+--infmt=<code>              Format of input structures:\n\
+                            0: PDB or PDBx/mmCIF, detected automatically;\n\
+                            1: PDB;\n\
+                            2: PDBx/mmCIF.\n\
+                        Default=0\n\
+--aatom=<atom_name>         4-character atom name (with spaces) to represent a\n\
+                            protein amino acid.\n\
+                        Default=\" CA \"\n\
+--natom=<atom_name>         4-character atom name (with spaces) to represent a\n\
+                            nucleic acid base.\n\
+                        Default=\" C3'\"\n\
+--hetatm                    Consider and align both ATOM and HETATM residues.\n\
+--mol=<code>                Molecular type for calculating TM-scores:\n\
+                            0: Protein;\n\
+                            1: Nucleic acid (RNA, DNA);\n\
+                            2: Automatically determined by the majority atom.\n\
+                        Default=2\n\
+--ter=<code>                Structure file parsing stops at:\n\
+                            0: end of file;\n\
+                            1: ENDMDL (end of first model) or END of file.\n\
+                        Default=1\n\
+--split=<code>              Use the following interpretation of a structure\n\
+                            file:\n\
+                            0: the entire structure is one single chain;\n\
+                            1: each MODEL is a separate chain (--ter=0);\n\
+                            2: each chain is a separate chain (--ter=0|1).\n\
+                        Default=2\n\
+\n\
+Similarity pre-screening options:\n\
+--pre-similarity=<similarity_threshold>\n\
+                            Minimum pairwise sequence similarity score [0,)\n\
+                            for conducting structure comparison.\n\
+                            0, all pairs are subject to further processing.\n\
+                        Default=0.0\n\
+--pre-score=<TMscore_threshold>\n\
+                            Minimum provisional TM-score [0,1) for structure\n\
+                            pairs to proceed to further stages.\n\
+                            0, all pairs are subject to further processing.\n\
+                        Default=0.4\n\
+\n\
+Per-pair computation options:\n\
+--symmetric                 Always produce symmetric alignments for the same\n\
+                            query-reference (reference-query) pair.\n\
+--refinement=<code>         Superposition refinement detail level [0,3].\n\
+                            Difference between 3 and 1 in TM-score is ~0.001.\n\
+                        Default=1\n\
+--depth=<code>              Superposition search depth:\n\
+                            0: deep;  1: high;  2: medium;  3: shallow.\n\
+                        Default=2\n\
+--gapcost=<penalty_code>    Gap cost used to estimate local similarity for\n\
+                            superposition configurations.\n\
+                            0: -0.8;  1: -1.2;  2: -3.0.\n\
+                        Default=1\n\
+--trigger=<percentage>      Threshold for estimated local similarity in\n\
+                            percent [0,100] to trigger superposition\n\
+                            analysis for a certain configuration\n\
+                            (0, unconditional analysis).\n\
+                        Default=50\n\
+--seedrule=<code>           Seeding strategy for superposition configurations:\n\
+                            0: continuous fragments;\n\
+                            1: 64-frame local alignment;\n\
+                            2: 128-frame local alignment.\n\
+                        Default=1\n\
+--window=<size>             Initial window size (in residues) used to analyze\n\
+                            superposition candidates {256,512}.\n\
+                        Default=256\n\
+--recalculate=<count>       Number of top-scored superposition candidates to\n\
+                            recalculate accurately {2,4,8,16,32}.\n\
+                        Default=32\n\
+--nbranches=<number>        Number [0,16] of independent top-performing\n\
+                            branches identified during superposition search to\n\
+                            explore in more detail (up to --recalculate).\n\
+                            NOTE: 0 skips this exploration & refinement.\n\
+                        Default=5\n\
+--ndps=<count>              Initial number of dynamic programming rounds [0,2]\n\
+                            to optimize alignments obtained from superposition\n\
+                            search. NOTE: 0 skips and sets --nbranches=0.\n\
+                        Default=2\n\
+--add-search-by-ss          Include superposition search by a combination of\n\
+                            secondary structure and sequence similarity, which\n\
+                            helps optimization for some pairs.\n\
+--add-chain-level-search    Include chain-level processing for superposition\n\
+                            search.\n\
+                            NOTE: Active when --chains is set.\n\
+--convergence=<number>      Number of final convergence tests [1,30].\n\
+                        Default=18\n\
+\n\
+Speed option:\n\
+--speed=<code>              Speed up the GTcomplex alignment algorithm at the\n\
+                            expense of optimality (larger values => faster;\n\
+                            NOTE: the pre-screening options are not affected;\n\
+                            NOTE: settings override specified options):\n\
+     0: --depth=0 --trigger=0 --nbranches=16 --add-search-by-ss\n\
+     1: --depth=0 --trigger=0\n\
+     2: --depth=0 --trigger=20\n\
+     3: --depth=0 --trigger=50\n\
+     4: --depth=1 --trigger=0\n\
+     5: --depth=1 --trigger=20\n\
+     6: --depth=1 --trigger=50\n\
+     7: --depth=2 --trigger=0\n\
+     8: --depth=2 --trigger=20\n\
+     9: --depth=2 --trigger=50\n\
+    10: --depth=2 --trigger=50 --recalculate=16 --nbranches=1 --ndps=1\n\
+    11: --depth=3 --trigger=20 --recalculate=16 --nbranches=1 --ndps=1 --refinement=0 --convergence=2\n\
+    12: --depth=3 --trigger=50 --recalculate=16 --nbranches=1 --ndps=1 --refinement=0 --convergence=2 --gapcost=2\n\
+    13: --depth=3 --trigger=50 --recalculate=8  --nbranches=0 --ndps=1 --refinement=0 --convergence=2 --gapcost=2\n\
+    14: --depth=3 --trigger=50 --recalculate=4  --nbranches=0 --ndps=1 --refinement=0 --convergence=2 --gapcost=2\n\
+    15: --depth=3 --trigger=50 --recalculate=4  --nbranches=0 --ndps=0 --refinement=0 --convergence=2 --gapcost=2\n\
+    16: --depth=3 --trigger=50 --recalculate=2  --nbranches=0 --ndps=0 --refinement=0 --convergence=2 --gapcost=2\n\
+                        Default=9\n\
+\n\
+HPC options:\n\
+--cpu-threads-reading=<count>\n\
+                            Number of CPU threads [1,64] for reading\n\
+                            reference data. NOTE that computation on GPU can\n\
+                            be faster than reading data by 1 CPU thread.\n\
+                        Default=10\n\
+--cpu-threads=<count>       Number of CPU threads [1,1024] for parallel\n\
+                            computation when compiled without support for\n\
+                            GPUs.\n\
+                            NOTE: Default number is shown using --dev-list.\n\
+                        Default=[MAX(1, #cpu_cores - <cpu-threads-reading>)]\n\
+--dev-queries-max-chains=<count>\n\
+                            Maximum number of chains [100,512] for query\n\
+                            complexes. Higher values increase memory usage and\n\
+                            may limit parallel execution.\n\
+                        Default=100\n\
+--dev-queries-max-per-chunk=<count>\n\
+                            Maximum number [1,2] of query complexes (chains\n\
+                            when --chains set) processed as a single chunk.\n\
+                        Default=1\n\
+--dev-queries-total-length-per-chunk=<length>\n\
+                            Maximum total length [100,50000] of\n\
+                            queries processed as one chunk in parallel.\n\
+                            Queries of length larger than the specified\n\
+                            length will be skipped. Use large values if\n\
+                            required and memory limits permit since they\n\
+                            greatly reduce #structure pairs processed in\n\
+                            parallel.\n\
+                        Default=4000\n\
+--dev-max-length=<length>   Maximum chain length [100,65535] of reference\n\
+                            structures. Chains of length larger than this\n\
+                            specified value will be skipped.\n\
+                            NOTE: Large values greatly reduce #structure pairs\n\
+                            processed in parallel.\n\
+                        Default=4000\n\
+--dev-min-length=<length>   Minimum reference chain length [3,32767].\n\
+                            Chains shorter than this value will be skipped.\n\
+                        Default=3 (20 when --chains is on)\n\
+--no-file-sort              Do not sort files by size. Data locality can be\n\
+                            beneficial when reading files lasts longer than\n\
+                            computation.\n\
+\n\
+Device options:\n\
+--dev-N=(<number>|,<id_list>)\n\
+                            Maximum number of GPUs to use. This can be\n\
+                            specified by a number or given by a comma-separated\n\
+                            list of GPU identifiers, which should start with a\n\
+                            comma. In the latter case, work is distributed in\n\
+                            the specified order. Otherwise, more powerful GPUs\n\
+                            are selected first.\n\
+                            NOTE: The first symbol preceding a list is a comma.\n\
+                            NOTE: The option has no effect for the version\n\
+                            compiled without support for GPUs.\n\
+                        Default=1 (most powerful GPU)\n\
+--dev-mem=<megabytes>       Maximum amount of GPU memory (MB) that can be used.\n\
+                            All memory is used if a GPU has less than the\n\
+                            specified amount of memory.\n\
+                        Default=[all memory of GPU(s)] (with support for GPUs)\n\
+                        Default=16384 (without support for GPUs)\n\
+--dev-expected-length=<length>\n\
+                            Expected length of database proteins. Its values\n\
+                            are restricted to the interval [20,200].\n\
+                            NOTE: Increasing it reduces memory requirements,\n\
+                            but mispredictions may cost additional computation\n\
+                            time.\n\
+                        Default=50\n\
+--io-nbuffers=<count>       Number of buffers [2,6] used to cache data read\n\
+                            from file. Values greater than 1 lead to increased\n\
+                            performance at the expense of increased memory\n\
+                            consumption.\n\
+                        Default=3\n\
+--io-unpinned               Do not use pinned (page-locked) CPU memory.\n\
+                            Pinned CPU memory provides better performance, but\n\
+                            reduces system resources. If RAM memory is scarce\n\
+                            (<2GB), using pinned memory may reduce overall\n\
+                            system performance.\n\
+                            By default, pinned memory is used.\n\
+\n\
+Other options:\n\
+--dev-list                  List all GPUs compatible and available on the\n\
+                            system, print a default number for option\n\
+                            --cpu-threads (for the CPU version), and exit.\n\
+-v [<level_number>]         Verbose mode.\n\
+-h                          This text.\n\
+\n\
+\n\
+Examples:\n\
+<> -v --qrs=str1.cif.gz --rfs=my_structure_database.tar -o my_output_directory --speed=12\n\
+<> -v --qrs=struct1.pdb --rfs=struct2.pdb,struct3.pdb,struct4.pdb -o my_output_directory\n\
+<> -v --qrs=struct1.pdb,my_struct_directory --rfs=my_ref_directory -o my_output_directory\n\
+<> -v --qrs=str1.pdb.gz,str2.cif.gz --rfs=archive.tar,my_ref_dir --chains -s 0.3 -o mydir\n\
+<> -v --cls=my_huge_structure_database.tar -o my_output_directory --speed=12\n\
+\n\
+";
+
+#endif//__gtcomplex_h__
