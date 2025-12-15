@@ -199,8 +199,8 @@
 ## GTcomplex demo notebook on Google Colab
 
 The [GTcomplex_demo1](GTcomplex_demo1.ipynb) notebook demonstrates all-against-all 
-alignment of queries in the Ref-2-100 dataset and completes in approximately 
-half a minute.
+alignment of queries from the Ref-2-100 and Viral-C (viral capsids) datasets, 
+completing in approximately 25 seconds and 2 minutes, respectively.
 
 ## Reporting issues
 
