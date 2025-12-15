@@ -1,4 +1,5 @@
 [![Release](https://img.shields.io/github/v/release/minmarg/gtcomplex)](https://github.com/minmarg/gtcomplex/releases)
+[![DOI](https://zenodo.org/badge/1038729073.svg)](https://doi.org/10.5281/zenodo.17937810)
 ![Header image](imgs/gtcomplex_header.jpg)
 
 # GTcomplex
