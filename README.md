@@ -7,6 +7,8 @@
 **High-performance 3D search and alignment of macromolecular complexes**  
 *Fast, accurate, scalable – for proteins, RNAs, DNAs*
 
+**GTcomplex is also available via a [web service](https://bioinformatics.lt/comer/gtalign/input_complex)**
+
 ## Features
 
   *  Graphics processing unit (GPU) version
@@ -202,6 +204,28 @@
 The [GTcomplex_demo1](GTcomplex_demo1.ipynb) notebook demonstrates all-against-all 
 alignment of queries from the Ref-2-100 and Viral-C (viral capsids) datasets, 
 completing in approximately 25 seconds and 2 minutes, respectively.
+
+## Citation
+
+If you use, reference, or benefit from the GTcomplex software or data, please cite:
+
+Margelevicius, M. GTcomplex: Spatial indexing-powered search and alignment of 
+macromolecular complexes. bioRxiv 2025.12.15.694356 (2025). 
+https://doi.org/10.64898/2025.12.15.694356 
+
+```bibtex
+@article {Margelevicius2025.12.15.694356,
+  author = {Margelevicius, Mindaugas},
+  title = {{GTcomplex}: Spatial indexing-powered search and alignment of macromolecular complexes},
+  elocation-id = {2025.12.15.694356},
+  year = {2025},
+  doi = {10.64898/2025.12.15.694356},
+  publisher = {Cold Spring Harbor Laboratory},
+  URL = {https://www.biorxiv.org/content/early/2025/12/17/2025.12.15.694356},
+  eprint = {https://www.biorxiv.org/content/early/2025/12/17/2025.12.15.694356.full.pdf},
+  journal = {bioRxiv}
+}
+```
 
 ## Reporting issues
 
