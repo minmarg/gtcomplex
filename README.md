@@ -199,6 +199,21 @@
     This allows for running multiple instances of GTcomplex simultaneously on a single 
     GPU or CPU.
 
+### Coordinate transformation
+
+  * **Transform structures individually or on a large scale**
+    GTcomplex output contains all information required for downstream structural
+    visualization and analysis, including the transformation matrices defining
+    optimal superpositions. 
+    To automatically generate transformed structures, use the 
+    `bin/supcomplex_wrapper.pl` script (or `bin/supcomplex1.pl` for individual 
+    structure pairs) available from the
+  [GTalign-web backend repository](https://github.com/minmarg/gtalign-web-backend).
+    The scripts operate directly on GTcomplex JSON output generated with the
+    `--outfmt=1` and `--referenced` options and can process all
+    identified hits in a result file, producing superimposed structures in a
+    fully automated manner.
+
 ## GTcomplex demo notebook on Google Colab
 
 The [GTcomplex_demo1](GTcomplex_demo1.ipynb) notebook demonstrates all-against-all 
